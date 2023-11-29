@@ -6,7 +6,7 @@
 #include <emscripten/html5_webgl.h>
 
 int main() {
-    auto glClipControlEXT = (PFNGLCLIPCONTROLEXTPROC)eglGetProcAddress("glClipControlEXT");
+    auto glPolygonOffsetClampEXT = (PFNGLPOLYGONOFFSETCLAMPEXTPROC)eglGetProcAddress("glPolygonOffsetClampEXT");
 
     EmscriptenWebGLContextAttributes attrs;
     emscripten_webgl_init_context_attributes(&attrs);
@@ -19,20 +19,20 @@ int main() {
     printf("GL_EXTENSIONS[]:\n");
     GLint count = 0;
     glGetIntegerv(GL_NUM_EXTENSIONS, &count);
-    bool haveClipControl = false;
+    bool found_EXT_polygon_offset_clamp = false;
     for (GLint i = 0; i < count; ++i) {
         const char* extension = (const char*) glGetStringi(GL_EXTENSIONS, i);
         printf("  - %s\n", extension);
-        if (strcmp(extension, "EXT_clip_control") == 0) {
-            haveClipControl = true;
+        if (strcmp(extension, "EXT_polygon_offset_clamp") == 0) {
+            found_EXT_polygon_offset_clamp = true;
         }
     }
 
-    printf("haveClipControl = %s\n", haveClipControl ? "true" : "false");
-    printf("glClipControlEXT = %p\n", glClipControlEXT);
-    if (haveClipControl) {
-        printf("EXT_clip_control was available, calling glClipControlEXT...\n");
-        glClipControlEXT(0, 0); // crash, function pointer is null
+    printf("found_EXT_polygon_offset_clamp = %s\n", found_EXT_polygon_offset_clamp ? "true" : "false");
+    printf("glPolygonOffsetClampEXT = %p\n", glPolygonOffsetClampEXT);
+    if (found_EXT_polygon_offset_clamp) {
+        printf("EXT_polygon_offset_clamp was available, calling glPolygonOffsetClampEXT...\n");
+        glPolygonOffsetClampEXT(0, 0, 0); // crash if function pointer is null
         printf("Success!\n");
     }
 }
